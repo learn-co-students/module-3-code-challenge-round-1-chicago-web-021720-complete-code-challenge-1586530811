@@ -56,7 +56,8 @@ const removeCommentEventListener = () => {
   comments.addEventListener('click', event => {
     event.preventDefault()
     if(event.target.dataset.id) {
-      // console.log(document.querySelector(event.target.dataset.id))
+      const commElem = document.querySelector(`[data-id~="${event.target.dataset.id}"]`).parentElement;
+      commElem.remove();
     }
   })
 }
