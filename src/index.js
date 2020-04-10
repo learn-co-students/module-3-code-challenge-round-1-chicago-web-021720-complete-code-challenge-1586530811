@@ -89,6 +89,23 @@ const handleFormSubmitButtonClick = (event) => {
   addNewCommentLi(inputText)  // Create the comment <li> and add it to the comments <ul>
   commentInput.value = ''     // Clear the input field
 
+  // Update the backend second
+  reqObj = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      image_id: imageId,
+      content: inputText
+    })
+  }
+  
+  fetch(commentsURL, reqObj)
+    .then(parseRespJSON)
+    .then(comment => console.log(comment))
+    .catch(logError)
 }
 
 // Listen for clicks on the comment form submit button
@@ -96,7 +113,6 @@ const addFormSubmitButtonListener = () => {
   const submitButton = document.querySelector('#comment_form').querySelector('input[type=submit]')
   submitButton.addEventListener('click', handleFormSubmitButtonClick)
 }
-
 
 // Collect everything in a main function
 const main = () => {
