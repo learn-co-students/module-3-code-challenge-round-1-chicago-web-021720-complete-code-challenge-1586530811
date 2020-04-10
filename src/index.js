@@ -55,11 +55,23 @@ const commentEventListener = () => {
 const removeCommentEventListener = () => {
   comments.addEventListener('click', event => {
     event.preventDefault()
-    if(event.target.dataset.id) {
-      const commElem = document.querySelector(`[data-id~="${event.target.dataset.id}"]`).parentElement;
+    commId = event.target.dataset.id
+    if(commId) {
+      const commElem = document.querySelector(`[data-id~="${commId}"]`).parentElement;
+      deleteComment(commId)
       commElem.remove();
     }
   })
+}
+
+const deleteComment = (id) => {
+  reqObj = {
+    method: 'DELETE',
+  }
+
+  fetch(`${commentsURL}${id}`, reqObj)
+    .then(resp => resp.json())
+    .then(json => console.log(json))
 }
 
 const persistComment = (comm) => {
