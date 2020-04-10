@@ -46,10 +46,25 @@ const fetchAndDisplayImage = () => {
 
 // Handle clicks on the like button
 const handleLikeButtonClick = (event) => {
+  
   // Update the frontend first (optimistic)
   const likesSpan = document.querySelector('#likes')
   const currentLikes = parseInt(likesSpan.innerText)
   likesSpan.innerText = currentLikes + 1
+
+  // Update the backend second
+  reqObj = {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      image_id: imageId
+    })
+  }
+  
+  fetch(likeURL, reqObj).catch(logError)
 }
 
 // Listen for clicks on the like button
