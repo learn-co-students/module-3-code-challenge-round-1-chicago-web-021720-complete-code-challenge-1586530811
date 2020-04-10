@@ -4,16 +4,26 @@ const imageURL = `https://randopic.herokuapp.com/images/${imageId}`
 const likeURL = `https://randopic.herokuapp.com/likes/`
 const commentsURL = `https://randopic.herokuapp.com/comments/`
 
+// Global constant nodes
+const commentsList = document.querySelector('#comments')
+
 // Fetch helper functions
 const parseRespJSON = response => response.json() 
 const logError = error => console.log(error) 
 
-// Make a <li> node for a comment
-const makeCommentLi = comment => {
+// Make a <li> node for a comment that exists on the backend, and add it to the comments <ul>
+const addExistingCommentLi = comment => {
   const li = document.createElement('li')
   li.innerText = comment.content
   li.dataset.id = comment.id
-  return li
+  commentsList.appendChild(li)
+}
+
+// Make a <li> node for a comment (text), and add it to the comments <ul>
+const addNewCommentLi = commentText => {
+  const li = document.createElement('li')
+  li.innerText = commentText
+  commentsList.appendChild(li)
 }
 
 // Display an image on the page using the fetched data
@@ -28,11 +38,7 @@ const displayImage = (image) => {
   const likesSpan = document.querySelector('#likes')
   likesSpan.innerText = image.like_count
 
-  const ul = document.querySelector('#comments')
-  image.comments.forEach(comment => {
-    const li = makeCommentLi(comment)
-    ul.appendChild(li)
-  })
+  image.comments.forEach(addExistingCommentLi)
 }
 
 // Make a fetch request to get image data
@@ -73,10 +79,30 @@ const addLikeButtonListener = () => {
   likeButton.addEventListener('click', handleLikeButtonClick)
 }
 
+
+const handleFormSubmitButtonClick = (event) => {
+  event.preventDefault()
+  const commentInput = event.target.previousElementSibling
+  const inputText = commentInput.value
+
+  // Update the frontent first (optimistic)
+  addNewCommentLi(inputText)  // Create the comment <li> and add it to the comments <ul>
+  commentInput.value = ''     // Clear the input field
+
+}
+
+// Listen for clicks on the comment form submit button
+const addFormSubmitButtonListener = () => {
+  const submitButton = document.querySelector('#comment_form').querySelector('input[type=submit]')
+  submitButton.addEventListener('click', handleFormSubmitButtonClick)
+}
+
+
 // Collect everything in a main function
 const main = () => {
   fetchAndDisplayImage()
   addLikeButtonListener()
+  addFormSubmitButtonListener()
 }
 
 // Execute main function
