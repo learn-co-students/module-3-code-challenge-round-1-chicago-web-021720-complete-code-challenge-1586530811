@@ -16,7 +16,6 @@ const makeCommentLi = comment => {
   return li
 }
 
-
 // Display an image on the page using the fetched data
 const displayImage = (image) => {
   
@@ -44,9 +43,25 @@ const fetchAndDisplayImage = () => {
     .catch(logError)
 }
 
+
+// Handle clicks on the like button
+const handleLikeButtonClick = (event) => {
+  // Update the frontend first (optimistic)
+  const likesSpan = document.querySelector('#likes')
+  const currentLikes = parseInt(likesSpan.innerText)
+  likesSpan.innerText = currentLikes + 1
+}
+
+// Listen for clicks on the like button
+const addLikeButtonListener = () => {
+  const likeButton = document.querySelector('#like_button')
+  likeButton.addEventListener('click', handleLikeButtonClick)
+}
+
 // Collect everything in a main function
 const main = () => {
   fetchAndDisplayImage()
+  addLikeButtonListener()
 }
 
 // Execute main function
