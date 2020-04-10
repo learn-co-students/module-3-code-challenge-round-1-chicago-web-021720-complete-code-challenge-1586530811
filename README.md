@@ -93,7 +93,7 @@ Use the data from the API response to change what's currently on the page (take 
 - the number of likes
 - any comments in an unordered list
 
-(If you cannot get your fetch request to work correctly, you can  use the example response above to append content to the DOM and attempt the subsequent steps)
+(If you cannot get your fetch request to work correctly, you can use the example response above to append content to the DOM and attempt the subsequent steps)
 
 ## Step 2 - Like Feature (Frontend)
 
