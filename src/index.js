@@ -24,6 +24,7 @@ const addNewCommentLi = commentText => {
   const li = document.createElement('li')
   li.innerText = commentText
   commentsList.appendChild(li)
+  return li  // Return the <li> node so we can add a `data-id` attribute to it later
 }
 
 // Display an image on the page using the fetched data
@@ -48,7 +49,6 @@ const fetchAndDisplayImage = () => {
     .then(displayImage)
     .catch(logError)
 }
-
 
 // Handle clicks on the like button
 const handleLikeButtonClick = (event) => {
@@ -79,15 +79,16 @@ const addLikeButtonListener = () => {
   likeButton.addEventListener('click', handleLikeButtonClick)
 }
 
-
+// Handle clicks on the comment form submit button
 const handleFormSubmitButtonClick = (event) => {
+  // Prevent form from submitting, scrape the data off the form
   event.preventDefault()
   const commentInput = event.target.previousElementSibling
   const inputText = commentInput.value
 
   // Update the frontent first (optimistic)
-  addNewCommentLi(inputText)  // Create the comment <li> and add it to the comments <ul>
-  commentInput.value = ''     // Clear the input field
+  const li = addNewCommentLi(inputText)  // Create the comment <li> and add it to the comments <ul>
+  commentInput.value = ''  // Clear the input field
 
   // Update the backend second
   reqObj = {
@@ -104,7 +105,9 @@ const handleFormSubmitButtonClick = (event) => {
   
   fetch(commentsURL, reqObj)
     .then(parseRespJSON)
-    .then(comment => console.log(comment))
+    .then(comment => {
+      li.dataset.id = comment.id  // Add the `data-id` attribute to the already created <li> node
+    })
     .catch(logError)
 }
 
