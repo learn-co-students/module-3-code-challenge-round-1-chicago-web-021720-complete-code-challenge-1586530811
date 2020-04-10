@@ -11,11 +11,19 @@ const commentsList = document.querySelector('#comments')
 const parseRespJSON = response => response.json() 
 const logError = error => console.log(error) 
 
+// Make a delete <button> node for deleting a comment
+const makeCommentDeleteButton = () => {
+  const button = document.createElement('button')
+  button.innerText = 'Delete'
+  return button
+}
+
 // Make a <li> node for a comment that exists on the backend, and add it to the comments <ul>
 const addExistingCommentLi = comment => {
   const li = document.createElement('li')
   li.innerText = comment.content
   li.dataset.id = comment.id
+  li.appendChild(makeCommentDeleteButton())
   commentsList.appendChild(li)
 }
 
@@ -23,6 +31,7 @@ const addExistingCommentLi = comment => {
 const addNewCommentLi = commentText => {
   const li = document.createElement('li')
   li.innerText = commentText
+  li.appendChild(makeCommentDeleteButton())
   commentsList.appendChild(li)
   return li  // Return the <li> node so we can add a `data-id` attribute to it later
 }
@@ -59,7 +68,7 @@ const handleLikeButtonClick = (event) => {
   likesSpan.innerText = currentLikes + 1
 
   // Update the backend second
-  reqObj = {
+  const reqObj = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -91,7 +100,7 @@ const handleFormSubmitButtonClick = (event) => {
   commentInput.value = ''  // Clear the input field
 
   // Update the backend second
-  reqObj = {
+  const reqObj = {
     method: 'POST',
     headers: {
       'Accept': 'application/json',
@@ -117,11 +126,45 @@ const addFormSubmitButtonListener = () => {
   submitButton.addEventListener('click', handleFormSubmitButtonClick)
 }
 
+const handleCommentsListClick = (event) => {
+  // Only act on clicks on delete buttons
+  if (event.target.matches('button')) {
+    const commentLi = event.target.parentElement
+
+    // Delete the comment from the backend first (pessimistic)
+    const reqObj = {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    }
+    
+    // Make the delete request and conditionally update the frontend
+    fetch(`${commentsURL}${commentLi.dataset.id}`, reqObj)
+      .then(parseRespJSON)
+      .then(resp => {
+        if (resp.message === 'Comment Successfully Destroyed') {
+          commentLi.remove()  
+        } else {
+          console.log('ERROR:', resp)
+        }
+      })
+      .catch(logError)
+  }
+}
+
+// Listen for clicks on the comments list
+const addCommentsListListener = () => {
+  commentsList.addEventListener('click', handleCommentsListClick)
+}
+
 // Collect everything in a main function
 const main = () => {
   fetchAndDisplayImage()
   addLikeButtonListener()
   addFormSubmitButtonListener()
+  addCommentsListListener()
 }
 
 // Execute main function
