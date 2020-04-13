@@ -15,7 +15,6 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch(imageURL)
   .then(resp => resp.json())
   .then(data => {
-    console.log(data)
     document.querySelector('h4').innerText = data.name
     likeCount.innerText = data.like_count
     document.getElementById('image').src = data.url
@@ -28,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
   likeButton.addEventListener('click', (e) => {
 
     const data = {
-      id: imageId
+      image_id: imageId
     }
 
     e.preventDefault()
@@ -41,8 +40,10 @@ document.addEventListener('DOMContentLoaded', () => {
     )
     .then(resp => resp.json())
     .then(json => {
-      console.log(e.target.id)
-      json.like_count = parseInt(json.like_count) + 1 })
+      json.like_count = parseInt(json.like_count) + 1
+    })
+
+    likeCount.innerText = parseInt(likeCount.innerText) + 1
   })
 
   commentForm.addEventListener('submit', (e) => {
@@ -50,7 +51,8 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault()
 
     const data = {
-      'id': imageId
+      image_id: imageId,
+      content: commentForm.querySelector('#comment_input').value
     }
 
     fetch(commentsURL,
@@ -62,9 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     )
     .then(resp => resp.json())
     .then(json => {
-      const comment = commentForm.querySelector('#comment_input').value
-      data.comments.push(comment)
-      commentsSection.innerHTML += `<li>${comment}</li><button id="delete_button>Delete Comment</button>`
+      commentsSection.innerHTML += `<li>${json.content}</li>`
     })
   })
 
