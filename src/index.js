@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   console.log('%c DOM Content Loaded and Parsed!', 'color: magenta')
 
-  let imageId = 5101 //Enter the id from the fetched image here
+  const imageId = 5101 //Enter the id from the fetched image here
 
   const imageURL = `https://randopic.herokuapp.com/images/${imageId}`
   const likeURL = `https://randopic.herokuapp.com/likes/`
@@ -15,8 +15,9 @@ document.addEventListener('DOMContentLoaded', () => {
   fetch(imageURL)
   .then(resp => resp.json())
   .then(data => {
-    document.querySelector('h4').innerText = data.name;
-    likeCount.innerText = data.like_count;
+    console.log(data)
+    document.querySelector('h4').innerText = data.name
+    likeCount.innerText = data.like_count
     document.getElementById('image').src = data.url
     data.comments.forEach(comment => {
       const commentLi = `<li dataset-comment-id=${comment.id}>${comment.content}</li>`;
@@ -24,29 +25,47 @@ document.addEventListener('DOMContentLoaded', () => {
     })
   })
 
-  likeButton.addEventListener('click', (e)=> {
+  likeButton.addEventListener('click', (e) => {
+
+    const data = {
+      id: imageId
+    }
 
     e.preventDefault()
 
-    // Couldn't get this 'POST' thing to work... doh!
-    // fetch(imageURL,
-    //   {
-    //     method: 'POST',
-    //     headers: {'Content-Type': 'application/json'},
-    //     body: JSON.stringify(data)
-    //   }
-    // )
-    // .then(resp => resp.json())
-    // .then(data => {data.like_count += 1})
-
-    likeCount.innerText = parseInt(likeCount.innerText) + 1
-
+    fetch(likeURL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      }
+    )
+    .then(resp => resp.json())
+    .then(json => {
+      console.log(e.target.id)
+      json.like_count = parseInt(json.like_count) + 1 })
   })
 
   commentForm.addEventListener('submit', (e) => {
+
     e.preventDefault()
-    console.log(commentForm.querySelector('#comment_input'))
-    commentsSection.innerHTML += `<li>${commentForm.querySelector('#comment_input').value}</li><button id="delete_button>Delete Comment</button>`
+
+    const data = {
+      'id': imageId
+    }
+
+    fetch(commentsURL,
+      {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(data)
+      }
+    )
+    .then(resp => resp.json())
+    .then(json => {
+      const comment = commentForm.querySelector('#comment_input').value
+      data.comments.push(comment)
+      commentsSection.innerHTML += `<li>${comment}</li><button id="delete_button>Delete Comment</button>`
+    })
   })
- 
+
 })
